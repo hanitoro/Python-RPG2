@@ -1,0 +1,16 @@
+{
+  "game": "AURION_GHOST_QUEST",
+  "version": 1,
+  "stage": 4,
+  "file_name": "guardian.py",
+  "file_hash": "75d85bed",
+  "checks_passed": 7,
+  "checks_total": 7,
+  "passed": true,
+  "extra_files": [
+    {
+      "file_name": "student_tests.py",
+      "file_hash": "dacd8c17"
+    }
+  ]
+}

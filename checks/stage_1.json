@@ -1,0 +1,10 @@
+{
+  "game": "AURION_GHOST_QUEST",
+  "version": 1,
+  "stage": 1,
+  "file_name": "terminal.py",
+  "file_hash": "23ac9e90",
+  "checks_passed": 4,
+  "checks_total": 4,
+  "passed": true
+}

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AURION//GHOST — автономный Python-квест</title>
+<style>
+:root{color-scheme:dark;--bg:#080e1b;--panel:#111c2d;--panel2:#16233a;--line:#2a3d5b;--text:#eef4ff;--muted:#a6b8d1;--cyan:#66d9fa;--violet:#b69dff;--green:#6bdfaf;--amber:#ffd27a;--red:#ff8790}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#26365d 0%,transparent 55%),var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,'Segoe UI',Arial,sans-serif}
+button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}a{color:var(--cyan)}button:focus-visible,input:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px max(20px,calc((100vw - 1420px)/2));border-bottom:1px solid var(--line);background:#0a1426eb;position:sticky;top:0;z-index:9;backdrop-filter:blur(12px)}.brand{font-size:20px;font-weight:900;letter-spacing:.5px;color:var(--text)}.brand em{font-style:normal;color:var(--cyan)}.brand small{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1.9px}.topright{display:flex;align-items:center;gap:14px}.timer{font:800 22px/1 'Consolas',monospace;color:var(--green)}.timer.late{color:var(--amber)}.tiny{font-size:11px;color:var(--muted)}.pill{border:1px solid #54709a;background:#192b48;color:#d4e6ff;border-radius:30px;padding:5px 10px;font-weight:700;font-size:11px}
+.shell{max-width:1420px;min-height:calc(100vh - 68px);margin:auto;display:grid;grid-template-columns:minmax(230px,265px) minmax(400px,1fr) minmax(285px,335px);gap:15px;padding:16px}.card{background:linear-gradient(155deg,#111e32 0%,#0e192c 100%);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 35px #0003}.side{padding:18px}.hlabel{font-size:11px;letter-spacing:1.4px;font-weight:900;color:var(--violet)}.side h2{font-size:19px;margin:5px 0 10px}.side p{color:var(--muted);font-size:13px}.side code,.right code{background:#061120;border:1px solid #263956;border-radius:5px;padding:1px 5px;color:#87e6e9;font-size:12px}.levels{display:flex;flex-direction:column;gap:8px;margin:18px 0}.lev{display:flex;align-items:center;gap:10px;border:1px solid #2a3954;background:#0e1a2d;padding:10px;border-radius:12px;color:var(--muted);font-size:12px}.lev b{font-size:16px;color:#c6d1e9;min-width:22px}.lev.done{border-color:#256f5b;background:#0f292d;color:#b9f5dd}.lev.active{border-color:#7364ba;background:#261f43;color:#eee5ff}.lev.active b{color:var(--violet)}.hint{border-top:1px solid var(--line);padding-top:13px;margin-top:16px}.hint button{border:1px solid #516d98;padding:8px 10px;border-radius:8px;background:#162743;color:var(--text);width:100%;text-align:left;font-size:12px;margin-top:8px}.hint pre{white-space:pre-wrap;font:12px/1.5 'Consolas',monospace;background:#071321;border:1px solid #2c435c;border-radius:9px;padding:9px;color:var(--muted)}
+.chat{display:flex;flex-direction:column;height:min(810px,calc(100vh - 100px));min-height:580px;overflow:hidden}.chathead{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:#17243b}.avatar{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:13px;color:#fff;background:#6345a8;font-size:20px;font-weight:bold}.avatar.ghost{background:#593c86}.presence{font-size:11px;color:var(--green)}.chatscroll{flex:1;overflow-y:auto;padding:18px 17px;background:linear-gradient(145deg,#0b1425,#0d182d 60%,#081222)}.day{margin:5px auto 20px;text-align:center;color:#9bb1cd;font-size:11px;letter-spacing:1px}.msg{max-width:84%;margin:0 0 14px;display:flex;flex-direction:column;align-items:flex-start;animation:slide .25s ease}.msg.user{margin-left:auto;align-items:flex-end}.who{font-size:10px;color:var(--muted);margin:0 10px 4px}.bubble{padding:11px 13px;border:1px solid #40516d;background:#1b2942;border-radius:15px 15px 15px 3px;white-space:pre-wrap;overflow-wrap:anywhere}.msg.user .bubble{border-color:#2f7797;background:#17415a;border-radius:15px 15px 3px 15px}.msg.system .bubble{background:#1a2938;color:#8eddc2;border-color:#245e57;font-family:Consolas,monospace;font-size:12px}.msg.archivist .who{color:var(--amber)}.msg.ghost .who{color:var(--violet)}.msg.trader .who{color:#ffcb8b}.msg.guardian .who{color:var(--cyan)}.typing{display:inline-flex;align-items:center;gap:5px;background:#18253e;border-radius:14px;padding:12px 15px;margin:10px 0}.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1s infinite}.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}@keyframes slide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.actions{border-top:1px solid var(--line);padding:14px;background:#122137}.actions h3{margin:0 0 10px;font-size:13px;color:var(--muted)}.choices{display:flex;flex-direction:column;gap:7px}.btn{padding:10px 12px;border:1px solid #46658f;border-radius:11px;background:#1d3455;color:var(--text);font-weight:650;text-align:left}.btn:hover{background:#29466f}.btn.prime{border-color:#318c79;background:#134e43;color:#dcfff1}.btn.amber{border-color:#a3772d;background:#46321b}.btn.minor{background:transparent;border-color:#475670;font-weight:500;font-size:12px}.actions p{font-size:12px;color:var(--muted);margin:8px 0 0}
+.right{padding:18px;display:flex;flex-direction:column;gap:14px}.right h2{font-size:18px;margin:4px 0 6px}.quest-title{color:#fff;font-weight:900;font-size:18px;margin:3px 0}.status{font-size:11px;color:var(--green)}.tasklist{margin:8px 0;padding-left:20px;color:#dbe8fc}.tasklist li{margin:7px 0;font-size:13px}.filebox{border:1px dashed #50739d;padding:12px;border-radius:12px;background:#0d1c30;font-size:12px}.filebox strong{display:block;margin-bottom:7px;color:var(--amber)}.codepath{display:inline-block;margin:5px 0;color:var(--green);font:13px Consolas,monospace}.imp{background:#2a2730;border-left:3px solid var(--amber);padding:10px;border-radius:8px;color:#f4ddb0;font-size:12px}.selects{display:flex;flex-direction:column;gap:8px}.selects label{font-weight:700;font-size:12px}.selects input[type=file]{width:100%;font-size:12px;padding:7px;border:1px solid #3c567a;border-radius:9px;background:#12233d;color:#d2e7ff}.err{background:#3e202a;border:1px solid #a25767;border-radius:9px;padding:9px;color:#ffcccc;font-size:12px}.ok{background:#123e36;border:1px solid #29765f;border-radius:9px;padding:10px;color:#b8ffdf;font-size:12px}.smalllink{color:var(--cyan);font-size:12px}.diminish{opacity:.62;font-size:12px}.navnote{font-size:12px;color:var(--muted)}.endcard{background:linear-gradient(145deg,#263253,#142937);border:1px solid #75a9ae;padding:17px;border-radius:12px}.endcard h3{color:var(--green);margin:4px 0 12px;font-size:20px}.endcard p{font-size:13px}.endcard button{width:100%;margin-top:10px}.info{border:1px solid var(--line);border-radius:12px;padding:11px;background:#0c1728;font-size:12px;color:var(--muted)}.progressbar{height:7px;background:#263650;border-radius:9px;overflow:hidden}.progressbar>i{display:block;height:100%;background:var(--green);transition:width .3s}.username{background:#0a1729;color:#fff;border:1px solid #3e5273;border-radius:8px;width:100%;padding:8px 9px}
+.footer{font-size:10px;color:#788aa1;padding:8px 4px}#alert{min-height:20px}.empty{color:var(--muted);font-size:13px}
+@media(max-width:1120px){.shell{grid-template-columns:210px minmax(360px,1fr);}.right{grid-column:1/-1}.chat{height:700px}}@media(max-width:710px){.shell{display:flex;flex-direction:column;padding:10px}.chat{height:650px;min-height:500px;order:1}.side{order:2}.right{order:3}.top{position:static}.brand{font-size:16px}.timer{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.msg,.dot{animation:none}}
+
+/* Отдельный стартовый экран и безопасный перезапуск сюжета */
+[hidden]{display:none!important}
+.welcome{min-height:100vh;display:grid;place-items:center;padding:34px 20px 55px;overflow:hidden;position:relative;background:radial-gradient(ellipse at 25% 0%,#372d60 0%,transparent 45%),radial-gradient(ellipse at 90% 80%,#0b4b5a 0%,transparent 46%),#07101e}
+.welcome::before{content:"";pointer-events:none;position:absolute;inset:0;opacity:.20;background-image:linear-gradient(#8096bc14 1px,transparent 1px),linear-gradient(90deg,#8096bc14 1px,transparent 1px);background-size:48px 48px}
+.welcome-wrap{position:relative;z-index:1;width:min(1040px,100%)}
+.welcome-brand{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.welcome-logo{font-size:15px;font-weight:900;letter-spacing:2px}.welcome-logo span{color:var(--cyan)}
+.welcome-tag{border:1px solid #6483af80;padding:7px 12px;border-radius:100px;color:#d4e6ff;font-size:11px;letter-spacing:1.2px}
+.welcome-grid{display:grid;grid-template-columns: minmax(0,1.35fr) minmax(270px,.82fr);gap:18px;align-items:stretch}
+.welcome-primary{border:1px solid #6a5b9e;background:linear-gradient(149deg,#1b213c 0%,#131d32 57%,#11283a 100%);border-radius:23px;padding:30px 32px;box-shadow:0 25px 80px #0008;position:relative;overflow:hidden}
+.welcome-primary:before{content:"";position:absolute;width:270px;height:270px;border:1px solid #a08dff38;border-radius:50%;top:-130px;right:-100px;box-shadow:0 0 0 34px #a08dff08,0 0 0 72px #a08dff08;pointer-events:none}
+.welcome-intro{font-size:12px;letter-spacing:2px;font-weight:900;color:var(--amber);margin-bottom:13px}
+.welcome h1{font-weight:950;font-size:clamp(42px,5vw,65px);letter-spacing:-2px;line-height:1.05;margin:0 0 17px;color:#fff}
+.welcome h1 span{color:var(--violet)}
+.welcome-subtitle{font-size:20px;color:#e6e1ff;font-weight:750;margin:0 0 17px}
+.welcome-desc{color:#bacbe3;max-width:490px;font-size:14px;line-height:1.7;margin:0 0 23px}
+.welcome-facts{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:21px}
+.welcome-fact{padding:6px 11px;border:1px solid #3e5a80;border-radius:8px;color:#b4d8f3;font-weight:700;font-size:11px}
+.welcome-name{display:block;color:#c8daf2;font-size:12px;font-weight:800;margin:0 0 7px}
+.welcome-name-input{display:block;width:100%;max-width:440px;padding:12px 14px;border-radius:11px;border:1px solid #63749e;color:white;background:#0a1528;margin:0 0 15px}
+.welcome-start{display:flex;justify-content:space-between;align-items:center;gap:14px;width:100%;max-width:440px;text-align:left;background:linear-gradient(110deg,#187f74,#266a91);border:1px solid #52d2ba;border-radius:12px;padding:14px 16px;color:white;font-weight:900;letter-spacing:.4px;box-shadow:0 6px 25px #0b7e8050}
+.welcome-start:hover{filter:brightness(1.13)}.welcome-start:active{transform:translateY(1px)}
+.welcome-start .arrow{font-size:21px;line-height:1}
+.welcome-resume{max-width:440px;margin-top:10px;padding:0}
+.welcome-resume button{color:#c4d6ff;background:none;border:none;text-decoration:underline;text-underline-offset:3px;padding:8px 1px;font-size:12px}
+.welcome-resume button:hover{color:white}
+.welcome-side{display:flex;flex-direction:column;gap:16px}
+.welcome-status{border:1px solid #365372;background:#0d1b2f;border-radius:18px;padding:22px 22px 18px}
+.welcome-status .caption{font-size:11px;color:var(--cyan);letter-spacing:1.7px;font-weight:900}
+.welcome-clock{font:900 43px/1.15 Consolas,monospace;color:#8ff2c8;margin:12px 0 8px}
+.welcome-status p{color:#bacbe3;font-size:12px;line-height:1.65;margin:0}
+.welcome-steps{border:1px solid #365372;background:#0d1b2f;border-radius:18px;padding:22px;flex:1}
+.welcome-steps h2{font-size:16px;margin:0 0 16px;color:#f0eaff}
+.welcome-steps ol{padding:0;margin:0;list-style:none;display:grid;gap:15px}
+.welcome-steps li{display:grid;grid-template-columns:28px 1fr;gap:10px;color:#cbd9ec;font-size:12px;line-height:1.6}
+.welcome-steps .n{border:1px solid #6876b4;border-radius:9px;display:grid;place-items:center;width:27px;height:27px;font-weight:900;color:#d9cbff}
+.welcome-bottom{color:#849fba;font-size:11px;text-align:center;margin:16px 0 0}
+.restart-btn{background:transparent;color:#b1c5dd;border:1px solid #49617c;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.restart-btn:hover{border-color:#f6bb7f;color:white;background:#392b32}
+.restart-dialog{width:min(480px,calc(100% - 32px));border:1px solid #8b6aa5;border-radius:18px;padding:23px;background:#17223a;color:#f0f6ff;box-shadow:0 25px 80px #000b}
+.restart-dialog::backdrop{background:#000b;backdrop-filter:blur(3px)}
+.restart-dialog h2{font-size:22px;margin:0 0 12px}.restart-dialog p{font-size:13px;color:#c4d2e3;line-height:1.7}
+.restart-dialog .warning{border-left:3px solid var(--amber);background:#312c35;padding:12px;margin:17px 0;border-radius:6px;color:#f1e2ba;font-size:12px}
+.restart-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+.restart-actions button{padding:10px 14px;border-radius:9px;border:1px solid #567399;color:white;background:#233b59;font-weight:750}
+.restart-actions .danger{border-color:#c17e77;background:#713b42;color:#fff2ee}
+.restart-actions button:hover{filter:brightness(1.15)}
+@media(max-width:780px){.welcome-grid{grid-template-columns:1fr}.welcome-primary{padding:26px 23px}.welcome-side{display:grid;grid-template-columns:1fr 1fr}.welcome-clock{font-size:34px}.topright{gap:8px;flex-wrap:wrap;justify-content:flex-end}.restart-btn{font-size:11px}}
+@media(max-width:560px){.welcome-side{display:flex}.welcome h1{font-size:47px}.welcome-brand{margin-bottom:12px}.welcome{padding:20px 12px}.top{align-items:flex-start}.topright{gap:5px}}
+
+</style>
+</head>
+<body>
+<section id="welcomeScreen" class="welcome" aria-labelledby="welcomeTitle">
+  <div class="welcome-wrap">
+    <div class="welcome-brand"><div class="welcome-logo">АУРИОН <span>//</span> АКАДЕМИЯ ПРОГРАММНЫХ ИСКУССТВ</div><span class="welcome-tag">СЕКРЕТНЫЙ КАНАЛ · ИНЦИДЕНТ 004</span></div>
+    <div class="welcome-grid">
+      <main class="welcome-primary">
+        <div class="welcome-intro">PYTHON RPG · СПЕЦИАЛЬНЫЙ ЭПИЗОД</div>
+        <h1 id="welcomeTitle">ПРИЗРАК <span>В КОДЕ</span></h1>
+        <p class="welcome-subtitle">Архивариус исчез. Академия ждёт решения.</p>
+        <p class="welcome-desc">Ночью в Центральном архиве случился сбой. Четыре программных модуля повреждены. Кто-то связался с тобой по закрытому каналу, но его имя скрыто. Начни переписку, восстанови код на Python и выясни, кому можно доверять.</p>
+        <div class="welcome-facts"><span class="welcome-fact">4 программных испытания</span><span class="welcome-fact">5 концовок</span><span class="welcome-fact">60 минут</span><span class="welcome-fact">Без интернета</span></div>
+        <label class="welcome-name" for="welcomeName">Как персонажи будут обращаться к тебе?</label>
+        <input id="welcomeName" class="welcome-name-input" maxlength="24" autocomplete="off" placeholder="Имя персонажа">
+        <button id="launchGame" type="button" class="welcome-start"><span id="launchText">НАЧАТЬ РАССЛЕДОВАНИЕ</span><span class="arrow" aria-hidden="true">→</span></button>
+        <div class="welcome-resume"><button id="welcomeRestart" type="button" hidden>Начать заново и перечитать историю</button></div>
+        <p id="welcomeProgress" style="font-size:12px;color:#a9d5d9;margin:14px 0 0"></p>
+      </main>
+      <div class="welcome-side">
+        <section class="welcome-status"><div class="caption">ВРЕМЯ ДО ЗАВЕРШЕНИЯ МИССИИ</div><div id="welcomeTimer" class="welcome-clock">60:00</div><p><span id="welcomeTimerStatus">Таймер пока не запущен. Отсчёт 60 минут начнётся после нажатия «Начать расследование». Затем возврат в меню не останавливает время.</span></p></section>
+        <section class="welcome-steps"><h2>Как проходит расследование</h2><ol>
+          <li><span class="n">1</span><span>Читай сообщения персонажей. Диалог раскрывается постепенно.</span></li>
+          <li><span class="n">2</span><span>Когда откроется комната, редактируй нужный <b>tasks/*.py</b> и сохраняй <b>Ctrl+S</b>.</span></li>
+          <li><span class="n">3</span><span>Запусти <b>CHECK_1.bat</b> (далее CHECK_2 и т. д.) и загрузи результат проверки в чат.</span></li>
+          <li><span class="n">4</span><span>В финале скачай журнал и запусти <b>MAKE_SUBMISSION.bat</b> для сдачи работы.</span></li>
+        </ol></section>
+      </div>
+    </div>
+    <p class="welcome-bottom">Прогресс хранится в этом браузере. Чтобы заново прочитать диалоги, используй «Начать заново» — таймер и Python-файлы останутся без изменений.</p>
+  </div>
+</section>
+<div id="gameScreen" hidden>
+<header class="top"><div class="brand">AURION<span style="color:var(--violet)">//</span><em>GHOST</em><small>PYTHON RPG · ПОБОЧНАЯ МИССИЯ</small></div><div class="topright"><button id="restartGame" type="button" class="restart-btn" title="Сбросить историю, сохранив таймер">↻ Начать заново</button><span class="pill" id="modeLabel">СОЛО РЕЖИМ</span><div><div class="timer" id="timer">60:00</div><div class="tiny" id="timeCaption">таймер ожидает запуска</div></div></div></header>
+<div class="shell">
+<aside class="card side">
+<div class="hlabel">ЛИЧНОЕ ДОСЬЕ</div><h2>Призрак в коде</h2>
+<label for="nickname" class="tiny">Имя персонажа (необязательно)</label><input class="username" id="nickname" maxlength="24" placeholder="Новобранец">
+<p>Архивариус пропал. Четыре модуля Академии повреждены. Не все собеседники говорят правду.</p>
+<div class="hlabel">КАРТА РАССЛЕДОВАНИЯ</div><div class="levels" id="levels"></div>
+<div class="tiny" id="progressText">0 из 4 модулей восстановлены</div><div class="progressbar"><i id="progressBar" style="width:0%"></i></div>
+<div class="hint"><div class="hlabel">ПОДСКАЗКИ АРХИВАРИУСА</div><p>Помощь доступна без штрафов. Начни с первой подсказки.</p><div id="hints"></div></div>
+<div class="hint"><div class="hlabel">ЛИЧНЫЙ ЖУРНАЛ</div><p id="clues">Улики: 0 / 3</p><button id="downloadJournal" type="button">Скачать журнал прохождения</button><p class="diminish">Журнал нужен для сдачи. Он не заменяет исходный код.</p></div>
+</aside>
+<section class="card chat" aria-label="Сюжетный мессенджер"><div class="chathead"><span class="avatar ghost">?</span><div><b>Академический мессенджер</b><div class="presence" id="presence">● защищённый канал · подключение активно</div></div><span style="margin-left:auto;color:var(--muted)" id="chatCount">23:47</span></div>
+<div class="chatscroll" id="chatScroll" aria-live="polite"><div class="day">АУРИОН · ИНЦИДЕНТ 004</div><div id="messages"></div><div id="typing"></div></div>
+<div class="actions" id="actions"><p>Подключение к Академии…</p></div></section>
+<aside class="card right"><div class="hlabel">АКТИВНОЕ ЗАДАНИЕ</div><div id="questPanel"><p class="empty">Дождись сообщения с первым заданием.</p></div>
+<div class="info"><b style="color:var(--amber)">Где писать код?</b><div>Только в папке <code>tasks</code>. Открой нужный <code>.py</code> в VS Code / PyCharm / IDLE, внеси правки и нажми <code>Ctrl+S</code>.</div><div style="margin-top:8px">Потом открой <code>CHECK_Н.bat</code> (где Н — номер комнаты). Для игры нужно загрузить исправленный файл и протокол <code>checks/stage_Н.json</code>.</div></div>
+<div class="info"><b style="color:var(--cyan)">Как сдавать?</b><div>В конце скачай журнал, помести его в общую папку квеста и запусти <code>MAKE_SUBMISSION.bat</code>. Отправь полученный ZIP преподавателю электронно.</div></div>
+<div class="footer">Работает полностью офлайн · Требуется Python 3 · Итоговая оценка определяется по исходникам и тестам, а не по кликам.</div>
+</aside>
+</div>
+</div>
+<dialog id="restartDialog" class="restart-dialog" aria-labelledby="restartHeading">
+  <h2 id="restartHeading">Начать расследование заново?</h2>
+  <p>Переписка начнётся с первого сообщения. Найденные улики, сюжетные выборы, пройденные комнаты и концовка будут сброшены.</p>
+  <div class="warning"><b>Важно:</b> таймер НЕ сбросится, отсчёт продолжится от первого нажатия «Начать расследование». Твои файлы <code>tasks/*.py</code> и результаты проверок на компьютере НЕ удаляются. Если хочешь сохранить прежний прогресс, сначала скачай журнал.</div>
+  <div class="restart-actions"><button id="cancelRestart" type="button">Отмена</button><button id="confirmRestart" type="button" class="danger">Да, начать заново</button></div>
+</dialog>
+<script>
+'use strict';
+const STORE='AURION_GHOST_V2_STATE';
+const FONT_MESSAGES={system:'Система Академии',ghost:'Призрак',archivist:'Архивариус',trader:'Торговец Меррик',keeper:'Хранитель хранилища',guardian:'Смотритель',user:'Ты'};
+const quests=[
+{file:'terminal.py',stage:1,title:'Комната 1 · Мёртвый терминал',brief:'Запусти повреждённый терминал: исправь синтаксис, научи функцию возвращать результат и убери лишний print.',requirements:['access_message(name) возвращает «Доступ: имя».','boot(name) возвращает «ONLINE | Доступ: имя».','boot(name) не печатает ничего сам.'],hints:['Посмотри на строку def access_message: заканчивается ли объявление правильно?','Если функция должна передавать результат другой части программы, используем return, а не print.','Исправь двоеточие после def. В boot собери строку из status и access_message(name), верни её через return.']},
+{file:'trader.py',stage:2,title:'Комната 2 · Лживый торговец',brief:'У торговца неправильно считается скидка. Почини total_cost и защитись от некорректных данных.',requirements:['total_cost(100,2,10) возвращает 180.0.','Скидка задаётся процентом, а не фиксированной суммой.','Для неверной цены/количества/скидки вызови ValueError.'],hints:['Посчитай цену без скидки: цена за штуку умножается на количество.','Скидка 10% означает, что платить нужно 90% от полной стоимости.','Проверь price >= 0, quantity — целое > 0, 0 <= discount_percent <= 100. Формула: price * quantity * (1 - discount_percent / 100); округли до 2 знаков.']},
+{file:'vault.py',stage:3,title:'Комната 3 · Проклятое хранилище',brief:'Предметы Рыцаря внезапно появляются у Алхимика. Сделай инвентари героев независимыми.',requirements:['Каждый объект Adventurer хранит свои предметы.','add_item() и remove_item() работают только с выбранным героем.','list_items() возвращает список предметов данного героя.'],hints:['Проверь, где создаётся список items: внутри класса или отдельно для каждого объекта?','Изменяемые атрибуты класса могут быть общими для всех экземпляров.','В __init__ добавь self.items = []. Убери общий items из тела класса.']},
+{file:'guardian.py',stage:4,title:'Комната 4 · Последняя защита',brief:'Смотритель блокирует даже здоровые записи. Исправь правило проверки и добавь два собственных assert.',requirements:['Файл с checksum_ok=True и size>0 должен давать ALLOW.','Если checksum_ok=False или size<=0, верни BLOCK.','В student_tests.py напиши 2 разных assert с вызовами scan_file().'],hints:['Один из if в guardian.py считает хороший размер признаком повреждения.','Прочитай условия для BLOCK: неверная контрольная сумма ИЛИ size <= 0. Всё остальное разрешено.','Замени неверную проверку размера. В student_tests.py добавь assert scan_file({...}) == "ALLOW" и assert scan_file({...}) == "BLOCK" на разных примерах.']}
+];
+const nodes={
+start:{messages:[['system','23:47:17 / СБОЙ ЦЕНТРАЛЬНОГО АРХИВА\nСОСТОЯНИЕ: КРИТИЧЕСКОЕ\nАРХИВАРИУС: МЕСТОНАХОЖДЕНИЕ НЕИЗВЕСТНО'],['ghost','О, кто-то подключился. Привет, {name}.'],['ghost','Архивариус куда-то делся, а системы Академии решили массово уйти в отпуск. Ты умеешь программировать?'],['ghost','Могу показать повреждённый терминал. Но сначала: ты хочешь посмотреть журнал или сразу попытаться всё включить?']],choices:[{label:'Сначала покажи журнал. Я хочу понять причину.',to:'before1',reply:'Покажи журнал. Сначала разберусь.',flag:'careful'},{label:'Попробуем восстановить терминал, потом разберёмся.',to:'before1',reply:'Запускаем восстановление. Журнал посмотрю позже.'}]},
+before1:{messages:[['ghost','Неплохо. Начнём с простого: терминал отказывается запускаться, а его автор клянётся, что «на его компьютере всё работало».'],['system','ОБНАРУЖЕН ФАЙЛ: tasks/terminal.py\nМИССИЯ 1: ВОССТАНОВИТЬ ЗАПУСК']],quest:1},
+after1:{messages:[['system','ДОСТУП К ТЕРМИНАЛУ ВОССТАНОВЛЕН.'],['ghost','Хм. Значит, кто-то действительно оставил в коде странные правки.'],['ghost','В логах сохранился номер 001. Можем проверить его, если не спешишь.']],choices:[{label:'Открыть журнал 001 и изучить запись.',to:'clue1',reply:'Открываю журнал 001.',clue:'terminal'},{label:'Сначала помочь остальным. В журнал вернусь позже.',to:'before2',reply:'Дальше. У нас мало времени.'}]},
+clue1:{messages:[['system','ЖУРНАЛ 001\n«СМОТРИТЕЛЬ: система защиты архива. Автор: Архивариус. Задача: не допустить утраты данных».'],['archivist','[запись] Не удаляйте журналы. Даже повреждённый отчёт может содержать настоящую причину аварии.'],['ghost','Неожиданно. Защитная система, которая всё ломает? Прямо сюжетный поворот…']],choices:[{label:'Продолжить к торговому сектору.',to:'before2',reply:'Нужно проверить остальные системы.'}]},
+before2:{messages:[['trader','ЭЙ! Меня слышно? Наконец-то! Твоя программа считает, что за три зелья я должен покупателю целое королевство!'],['ghost','Это Меррик. Он разозлится даже на калькулятор. Но тут он, кажется, прав.'],['trader','Файл с расчётом в tasks/trader.py. Верни мне честную кассу, а то банк уже забирает лавку!'],['system','МИССИЯ 2: ИСПРАВИТЬ РАСЧЁТ ПОКУПОК']],quest:2},
+after2:{messages:[['trader','Сработало! Монеты снова движутся в правильном направлении! Я почти верю в людей.'],['trader','Эй, стой. Вчера кто-то купил у меня кристалл памяти. В чеке есть имя получателя.'],['ghost','Чеки? Серьёзно? Мы спасаем Академию или ведём бухгалтерию?']],choices:[{label:'Проверить чек №404.',to:'clue2',reply:'Квитанция может быть важна. Покажи.',clue:'receipt'},{label:'Пусть Меррик отдыхает — идём в хранилище.',to:'before3',reply:'Дальше. Время идёт.'}]},
+clue2:{messages:[['trader','КВИТАНЦИЯ №404. Один кристалл памяти. Получатель — СМОТРИТЕЛЬ. Передано ЗА ЧАС до аварии.'],['ghost','Звучит подозрительно, правда? Как будто Смотритель готовил что-то заранее…']],choices:[{label:'Продолжить к хранилищу.',to:'before3',reply:'Улика записана. Что дальше?'}]},
+before3:{messages:[['keeper','Я — хранитель оружейной. Внимание, ЧП: меч Рыцаря появился в сумке Алхимика!'],['keeper','А следом — сорок семь лягушек. Я предпочитаю не выяснять, откуда они.'],['ghost','Ха! Похоже, два героя случайно используют одну и ту же сумку. Код в tasks/vault.py.'],['system','МИССИЯ 3: РАЗДЕЛИТЬ ИНВЕНТАРИ']],quest:3},
+after3:{messages:[['keeper','Меч снова у Рыцаря, лягушки у Алхимика. Академия благодарна. Наверное.'],['keeper','Я обнаружил записку, спрятанную между артефактами. Может быть, посмотришь?'],['ghost','Да там наверняка опять скучная инструкция. До ядра рукой подать.']],choices:[{label:'Прочитать записку Архивариуса.',to:'clue3',reply:'Читаю записку.',clue:'note'},{label:'Идём к ядру, записку оставим.',to:'before4',reply:'Не хочу терять время.'}]},
+clue3:{messages:[['archivist','[запись] Я вошёл в защищённую область добровольно. Смотритель создал резервную копию, чтобы сберечь Архив. Если это читают ученики — проверяйте правила, а не обвинения.'],['ghost','...'],['ghost','Ладно. Идём к ядру.']],choices:[{label:'Открыть центральное ядро.',to:'before4',reply:'Готов проверить Смотрителя.'}]},
+before4:{messages:[['guardian','ПОДКЛЮЧЕНИЕ УСТАНОВЛЕНО.\nМОЯ ЦЕЛЬ: ЗАЩИТА АРХИВА.\nОБНАРУЖЕНО ПОВРЕЖДЁННЫХ ЗАПИСЕЙ: 100%.'],['ghost','Слышал? Оно хочет всё заблокировать. Просто отключи эту штуку!'],['guardian','ТРЕБУЕТСЯ ПРОВЕРКА АЛГОРИТМА scan_file().'],['archivist','[фрагмент записи] Не доверяй одному результату. Проверь здоровый файл и повреждённый.'],['system','МИССИЯ 4: ПОЧИНИТЬ ПРАВИЛО ПРОВЕРКИ И НАПИСАТЬ ДВА ТЕСТА']],quest:4},
+after4:{messages:[['guardian','КОНТРОЛЬНЫЕ ПРОВЕРКИ ПРОЙДЕНЫ. УГРОЗА МАССОВОЙ БЛОКИРОВКИ СНЯТА.'],['ghost','М-м. А ты упрямый. Хорошо, выбирай сам, что делать с ядром.'],['system','ДОСТУПНЫ ДЕЙСТВИЯ: восстановить защиту / отключить защиту / исследовать источник вмешательства.']],choices:[{label:'Восстановить Смотрителя и вернуть Архивариуса.',to:'ending',reply:'Я восстановлю защиту.',endingAction:'restore'},{label:'Отключить Смотрителя на всякий случай.',to:'ending',reply:'Отключаю Смотрителя.',endingAction:'shutdown'},{label:'Исследовать, кто изменил правила проверки.',to:'ending',reply:'Сначала выясню источник вмешательства.',endingAction:'investigate'}]},
+early:{messages:[['system','ПРОТОКОЛ АВАРИЙНОГО ЗАВЕРШЕНИЯ\nРаботы можно сдать частично. Выбери решение для Академии.']],choices:[{label:'Передать Архивариусу текущий прототип.',to:'ending',reply:'Сохраняю текущие исправления и передаю прототип.',endingAction:'partial'},{label:'Отключить всю защиту прямо сейчас.',to:'ending',reply:'Отключаю защиту.',endingAction:'shutdown'}]},
+ending:{messages:[],end:true}
+};
+const endingTexts={
+worst:{name:'ОТКРЫТЫЕ ВРАТА',label:'Худшая концовка',text:'Ты прервал восстановление и отключил защиту слишком рано. Призрак получил доступ к незакрытым участкам Архива. Академия уцелела, но теперь в ней есть неизвестный наблюдатель.',epilogue:'«Спасибо, новичок. Ты даже не представляешь, насколько помог». — Призрак'},
+bad:{name:'СПАСЕНИЕ ЛЮБОЙ ЦЕНОЙ',label:'Плохая концовка',text:'Аварийное отключение остановило угрозу, но Архив остался без защиты. Гильдии предстоит долгое восстановление. Архивариус сохранил твои исправления и оставил двери Академии открытыми.',epilogue:'«Иногда быстрый путь становится самым длинным». — Архивариус'},
+neutral:{name:'АРХИВ СНОВА ДЫШИТ',label:'Нейтральная концовка',text:'Ты восстановил значительную часть систем, но не довёл расследование до конца. Архивариус получил твой прототип и обещал закончить работу с оставшимися модулями.',epilogue:'«Важна не идеальная попытка, а исправления, которые можно продолжить». — Архивариус'},
+good:{name:'ХРАНИТЕЛЬ ВОССТАНОВЛЕН',label:'Хорошая концовка',text:'Все четыре модуля восстановлены, а Смотритель снова защищает Архив. Архивариус возвращается и благодарит тебя. Кто вмешался в код, пока остаётся загадкой.',epilogue:'«Сегодня ты доказал, что умеешь не просто чинить, но и проверять». — Архивариус'},
+true:{name:'ТОТ, КТО НАБЛЮДАЕТ',label:'Истинная концовка',text:'Ты восстановил модули, проверил работу Смотрителя и соединил три улики. Призрак оказался фрагментом старого экспериментального алгоритма Академии. Он оставил след более крупной системы.',epilogue:'«Впечатляет. Но ты ведь понимаешь, что я был всего лишь тестовой версией?» — Призрак'}
+};
+function initialState(){return {startAt:null,name:'Новобранец',node:'start',shown:0,history:[],clues:[],completed:{},ending:null,choices:[],hintsSeen:{},hasEntered:false,version:2}}
+let S;try{S=JSON.parse(localStorage.getItem(STORE)||'null')}catch(e){} if(!S||S.version!==2||!Object.hasOwn(S,'startAt')){S=initialState()}
+// Сохраняем прогресс пользователей прошлой версии при обновлении архива.
+if(S.hasEntered===undefined) S.hasEntered=Boolean((S.history||[]).length||S.node!=='start'||S.ending);
+let changingNode=false, messageTimeout=null, transitionTimeout=null, fileSelected=null, proofSelected=null, testSelected=null, visibleAlert='', stateGeneration=0;
+function persist(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[x]))}
+function displayName(){return (S.name||'Новобранец').slice(0,24)}
+function replaceName(t){return t.replace(/\{name\}/g,displayName())}
+function addHistory(from,text){S.history.push({from,text:replaceName(text),at:Date.now()});persist()}
+function renderHistory(){let html='';for(const [i,m] of S.history.entries()){html+=`<div class="msg ${esc(m.from)}"><div class="who">${esc(FONT_MESSAGES[m.from]||m.from)}</div><div class="bubble">${esc(m.text)}</div></div>`}document.getElementById('messages').innerHTML=html;const sc=document.getElementById('chatScroll');sc.scrollTop=sc.scrollHeight}
+function renderLevels(){const done=Object.keys(S.completed).length,active=(nodes[S.node]||{}).quest;
+ document.getElementById('levels').innerHTML=quests.map(q=>`<div class="lev ${S.completed[q.stage]?'done':active===q.stage?'active':''}"><b>${S.completed[q.stage]?'✓':q.stage}</b><span>${esc(q.title)}<br><span class="tiny">${S.completed[q.stage]?'ПРОЙДЕНО':active===q.stage?'АКТИВНО':'ЗАКРЫТО / В ОЖИДАНИИ'}</span></span></div>`).join('');
+ document.getElementById('progressText').textContent=`${done} из 4 модулей восстановлены`;document.getElementById('progressBar').style.width=(done*25)+'%';document.getElementById('clues').textContent=`Улики: ${S.clues.length} / 3`;
+ document.getElementById('modeLabel').textContent=S.ending?'ЭПИЛОГ':`SOLO · ${done}/4`;
+}
+function renderHints(){const room=(nodes[S.node]||{}).quest;const div=document.getElementById('hints');if(!room||S.shown<(nodes[S.node]?.messages?.length||0)){div.innerHTML='<p>Подсказки станут доступны после получения задания в диалоге.</p>';return}const q=quests[room-1];const shown=S.hintsSeen[room]||0;let html='';for(let i=0;i<shown;i++)html+=`<pre>Подсказка ${i+1}:\n${esc(q.hints[i])}</pre>`;if(shown<3)html+=`<button id="hintBtn" type="button">Открыть подсказку ${shown+1} из 3</button>`;div.innerHTML=html;const b=document.getElementById('hintBtn');if(b)b.onclick=()=>{S.hintsSeen[room]=(S.hintsSeen[room]||0)+1;persist();renderHints()};}
+function renderQuest(){const node=nodes[S.node],qnum=node?.quest,box=document.getElementById('questPanel');if(S.ending){const e=endingTexts[S.ending];box.innerHTML=`<div class="endcard"><div class="hlabel">${esc(e.label)}</div><h3>${esc(e.name)}</h3><p>${esc(e.text)}</p><blockquote>${esc(e.epilogue)}</blockquote><button class="btn prime" id="endJournal">Скачать журнал</button></div>`;document.getElementById('endJournal').onclick=downloadJournal;return}
+if(!qnum||S.shown<(node?.messages?.length||0)){box.innerHTML='<p class="empty">Читай сообщения собеседника. Задание появится здесь после того, как персонаж его объяснит.</p>';return}const q=quests[qnum-1];const extra=qnum===4?'<label for="testFile">3. Твои тесты: tasks/student_tests.py</label><input type="file" id="testFile" accept=".py">':'';
+ box.innerHTML=`<div class="status">АКТИВНО · ROOM 0${qnum}</div><div class="quest-title">${esc(q.title)}</div><p style="font-size:13px;color:var(--muted)">${esc(q.brief)}</p><div class="filebox"><strong>РЕДАКТИРУЙ ЭТОТ ФАЙЛ</strong><span class="codepath">tasks/${esc(q.file)}</span><div>Открой в редакторе, исправь и сохрани <b>Ctrl+S</b>.</div></div><ol class="tasklist">${q.requirements.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><div class="imp">Проверка: дважды нажми <b>CHECK_${qnum}.bat</b> в папке квеста, либо выполни <code>python CHECK.py ${qnum}</code>. Если все тесты пройдены, появится <code>checks/stage_${qnum}.json</code>.</div><div class="selects"><label for="sourceFile">1. Исправленный tasks/${esc(q.file)}</label><input type="file" id="sourceFile" accept=".py"><label for="proofFile">2. Протокол checks/stage_${qnum}.json</label><input type="file" id="proofFile" accept=".json">${extra}<button class="btn prime" type="button" id="verifyBtn">ПОДТВЕРДИТЬ РЕЗУЛЬТАТ В ИГРЕ</button><div id="verifyAlert"></div></div><p class="navnote">Протокол самопроверки не создаётся, если задания не выполнены. Просто нажимать «Далее» здесь недостаточно.</p>`;
+ document.getElementById('verifyBtn').onclick=verifyStage;}
+function renderActions(){const node=nodes[S.node],box=document.getElementById('actions');if(S.ending){box.innerHTML=`<h3>${esc(endingTexts[S.ending].label)} · уровень завершён</h3><button class="btn prime" type="button" id="journalBtn">Скачать журнал прохождения</button><p>Исправленные Python-файлы всё равно нужно сдать преподавателю.</p>`;document.getElementById('journalBtn').onclick=downloadJournal;return}
+ if(S.shown<(node.messages||[]).length){box.innerHTML='<p>Новый собеседник печатает сообщение…</p>';return}
+ if(node.quest){box.innerHTML=`<h3>🔧 Задание открыто: комната ${node.quest} из 4</h3><p>Редактируй <b>tasks/${quests[node.quest-1].file}</b> и загрузи успешный результат проверки справа.</p><button class="btn minor" type="button" id="earlyBtn">Сдать частичный результат и завершить сейчас</button>`;document.getElementById('earlyBtn').onclick=earlyExit;return}
+ if(node.choices){box.innerHTML='<h3>Выбери реплику</h3><div class="choices">'+node.choices.map((o,i)=>`<button type="button" class="btn ${i===0?'prime':''}" data-choice="${i}">${esc(o.label)}</button>`).join('')+'</div>'+(S.node!=='start'&&S.node!=='early'?'<p>Ответ влияет на диалог и улики. Вернуться к пропущенной ветке нельзя.</p>':'');box.querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.choice))));return}
+ box.innerHTML='<p>Переход…</p>'}
+function render(){renderHistory();renderLevels();renderHints();renderQuest();renderActions();}
+function progressDialogue(){if(messageTimeout||S.ending)return;const n=nodes[S.node];if(!n)return;if(S.shown>=n.messages.length){document.getElementById('typing').innerHTML='';renderActions();renderQuest();renderHints();return}document.getElementById('typing').innerHTML='<div class="typing" aria-label="Собеседник печатает"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';const sc=document.getElementById('chatScroll');sc.scrollTop=sc.scrollHeight;messageTimeout=setTimeout(()=>{messageTimeout=null;let node=nodes[S.node];if(!node||S.shown>=node.messages.length)return;let [from,msg]=node.messages[S.shown++];addHistory(from,msg);document.getElementById('typing').innerHTML='';renderHistory();renderActions();progressDialogue()},540);}
+function goto(node,reply){if(messageTimeout){clearTimeout(messageTimeout);messageTimeout=null}if(reply)addHistory('user',reply);S.node=node;S.shown=0;persist();render();progressDialogue()}
+function choose(i){const n=nodes[S.node],o=n?.choices?.[i];if(!o)return;if(o.flag==='careful'){S.choices.push('Осторожно проверил журнал')}if(o.clue&&!S.clues.includes(o.clue))S.clues.push(o.clue);S.choices.push(o.label);persist();if(o.endingAction){S.ending=computeEnding(o.endingAction);addHistory('user',o.reply);addHistory('system','ИТОГ МИССИИ: '+endingTexts[S.ending].name);addHistory(['true','worst'].includes(S.ending)?'ghost':'archivist',endingTexts[S.ending].epilogue);S.node='ending';S.shown=0;persist();render();return}goto(o.to,o.reply)}
+function computeEnding(action){const count=Object.keys(S.completed).length;if(action==='shutdown')return count<2?'worst':'bad';if(action==='partial')return count>=3?'neutral':(count>=2?'bad':'neutral');if(count<4)return 'neutral';if(action==='investigate' && S.clues.length===3)return 'true';return 'good'}
+function earlyExit(){if(!confirm('Завершить сейчас и зафиксировать частичный результат? Это не помешает сдать код.'))return;goto('early','Передаю текущую версию на разбор.')} 
+function hashFNV(bytes){let h=0x811c9dc5;for(const b of bytes)h=Math.imul(h^b,0x01000193)>>>0;return h.toString(16).padStart(8,'0')}
+async function verifyStage(){const generation=stateGeneration;const stage=nodes[S.node]?.quest;if(!stage)return;const source=document.getElementById('sourceFile').files[0],proof=document.getElementById('proofFile').files[0],test=stage===4?document.getElementById('testFile').files[0]:null;const out=document.getElementById('verifyAlert');const say=(t,good=false)=>out.innerHTML=`<div class="${good?'ok':'err'}">${esc(t)}</div>`;
+ if(!source||!proof||(stage===4&&!test)){say('Выбери все файлы, указанные в форме. Нужен исправленный .py и успешный протокол .json'+(stage===4?' плюс student_tests.py.':''));return}
+ try{const q=quests[stage-1],raw=JSON.parse(await proof.text());if(source.name!==q.file||proof.name!==`stage_${stage}.json`){say('Проверь имена файлов: выбран не тот .py или не тот JSON.');return}if(raw.game!=='AURION_GHOST_QUEST'||raw.stage!==stage||raw.passed!==true||raw.checks_passed!==raw.checks_total||!raw.checks_total||raw.file_name!==q.file){say('Протокол не соответствует текущей комнате или тесты не пройдены. Перезапусти CHECK_'+stage+'.bat.');return}
+ let digest=hashFNV(new Uint8Array(await source.arrayBuffer()));if(digest!==raw.file_hash){say('Файл Python изменился после проверки или выбран другой файл. Сохрани Ctrl+S и запусти CHECK_'+stage+'.bat ещё раз.');return}
+ if(stage===4){const extra=raw.extra_files?.find(x=>x.file_name==='student_tests.py');if(!extra||test.name!=='student_tests.py'||extra.file_hash!==hashFNV(new Uint8Array(await test.arrayBuffer()))){say('Проверки student_tests.py изменены после запуска CHECK_4.bat. Запусти проверку заново и выбери актуальный файл.');return}}
+ if(generation!==stateGeneration)return;S.completed[stage]={file:q.file,verifiedAt:Date.now(),tests:raw.checks_total,hash:raw.file_hash};persist();say('Все проверки пройдены. Доступ к следующей части сюжета открыт!',true);addHistory('system',`КОМНАТА ${stage}: ${raw.checks_total}/${raw.checks_total} ТЕСТОВ ПРОЙДЕНО.`);transitionTimeout=setTimeout(()=>{transitionTimeout=null;if(generation===stateGeneration)goto('after'+stage)},550);
+ }catch(e){say('Не получилось прочитать файлы. Выбери правильный JSON, сформированный CHECK_'+stage+'.bat. Детали: '+e.message)}}
+
+// Стартовый экран показывается при каждом открытии. До первого нажатия
+// «Начать расследование» не запускаются ни история, ни таймер.
+function syncWelcome(){
+  const hasProgress=Boolean(S.hasEntered);
+  document.getElementById('welcomeName').value=S.name||'Новобранец';
+  document.getElementById('launchText').textContent=hasProgress?'ПРОДОЛЖИТЬ РАССЛЕДОВАНИЕ':'НАЧАТЬ РАССЛЕДОВАНИЕ';
+  document.getElementById('welcomeRestart').hidden=!hasProgress;
+  document.getElementById('welcomeProgress').textContent=hasProgress?`Сохранённый прогресс: ${Object.keys(S.completed).length}/4 комнат, ${S.clues.length}/3 улик. Вы можете продолжить или начать заново.`:'Начальная история появится только после нажатия кнопки.';
+}
+function enterGame(){
+  // Первый запуск истории фиксирует старт единожды. Возобновление и перезапуск
+  // сюжета не дают дополнительные 60 минут.
+  if(S.startAt===null)S.startAt=Date.now();
+  S.name=(document.getElementById('welcomeName').value.trim().slice(0,24)||'Новобранец');
+  S.hasEntered=true;
+  persist();
+  document.getElementById('nickname').value=S.name;
+  document.getElementById('welcomeScreen').hidden=true;
+  document.getElementById('gameScreen').hidden=false;
+  render();
+  updateTimer();
+  progressDialogue();
+}
+function requestRestart(){document.getElementById('restartDialog').showModal()}
+function resetStory(){
+  stateGeneration++;
+  if(messageTimeout){clearTimeout(messageTimeout);messageTimeout=null}
+  if(transitionTimeout){clearTimeout(transitionTimeout);transitionTimeout=null}
+  const originalTime=S.startAt,originalName=S.name;
+  S=initialState();
+  S.startAt=originalTime;  // Повторный старт не предоставляет новый час.
+  S.name=originalName;
+  persist();
+  document.getElementById('messages').innerHTML='';
+  document.getElementById('typing').innerHTML='';
+  document.getElementById('restartDialog').close();
+  document.getElementById('gameScreen').hidden=true;
+  document.getElementById('welcomeScreen').hidden=false;
+  syncWelcome();
+  updateTimer();
+  document.getElementById('launchGame').focus();
+}
+document.getElementById('launchGame').onclick=enterGame;
+document.getElementById('welcomeRestart').onclick=requestRestart;
+document.getElementById('restartGame').onclick=requestRestart;
+document.getElementById('cancelRestart').onclick=()=>document.getElementById('restartDialog').close();
+document.getElementById('confirmRestart').onclick=resetStory;
+
+function journalText(){let lines=[
+'PYTHON RPG — «ПРИЗРАК В КОДЕ»',
+'Учебный журнал прохождения • автономная миссия',
+'Персонаж: '+displayName(),
+'Время начала расследования: '+(S.startAt===null?'не запускалось':new Date(S.startAt).toLocaleString('ru-RU')),
+'Время формирования отчёта: '+new Date().toLocaleString('ru-RU'),
+'Прошло времени: '+(S.startAt===null?0:Math.max(0,Math.floor((Date.now()-S.startAt)/60000)))+' мин.',
+'Проверено комнат: '+Object.keys(S.completed).length+'/4',
+'Улики: '+S.clues.length+'/3',
+'Концовка: '+(S.ending?endingTexts[S.ending].label+' — '+endingTexts[S.ending].name:'ещё не получена'),
+'', 'ПРОВЕРКИ МОДУЛЕЙ:'];quests.forEach(q=>{let p=S.completed[q.stage];lines.push(`Комната ${q.stage}. ${q.file}: ${p?'пройдено, '+p.tests+' тестов':'пока не пройдено'}`)});lines.push('','ВЫБОРЫ:',...(S.choices.length?S.choices:['Пока нет записей']),'','СДАЧА:', '1. Сдай файлы из папки tasks/ и этот журнал.', '2. Запусти MAKE_SUBMISSION.bat для упаковки.', '3. Электронно отправь ZIP преподавателю.', '','Примечание: автономный журнал сам по себе не доказывает выполнение.','Преподаватель проверяет исходники отдельно.');return lines.join('\r\n')}
+function downloadJournal(){const text=journalText(),blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='journal_aurion.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
+function updateTimer(){
+  const started=S.startAt!==null;
+  const sec=started?Math.max(0,Math.floor((Date.now()-S.startAt)/1000)):0;
+  const remaining=Math.max(0,3600-sec);
+  const mm=String(Math.floor(remaining/60)).padStart(2,'0'),ss=String(remaining%60).padStart(2,'0');
+  const display=mm+':'+ss;
+  const t=document.getElementById('timer');
+  t.textContent=display;
+  t.classList.toggle('late',started&&sec>=3600);
+  document.getElementById('welcomeTimer').textContent=display;
+  document.getElementById('welcomeTimer').style.color=started&&sec>=3600?'#ffd27a':'#8ff2c8';
+  document.getElementById('timeCaption').textContent=!started?'таймер ожидает запуска':sec>=3600?`60 минут истекли. Можно сдать частичный результат (+${Math.floor((sec-3600)/60)} мин.)`:'отсчёт начат кнопкой «Начать расследование»';
+  document.getElementById('welcomeTimerStatus').textContent=!started
+    ?'Таймер пока не запущен. Отсчёт 60 минут начнётся после нажатия «Начать расследование». Можно спокойно прочитать правила.'
+    :'Отсчёт начался при первом нажатии «Начать расследование». Закрытие страницы и возврат в меню не останавливают таймер.';
+}
+document.getElementById('nickname').value=S.name||'Новобранец';document.getElementById('nickname').addEventListener('change',ev=>{S.name=ev.target.value.trim().slice(0,24)||'Новобранец';persist()});document.getElementById('downloadJournal').onclick=downloadJournal;
+persist();syncWelcome();updateTimer();setInterval(updateTimer,1000);
+</script>
+</body></html>

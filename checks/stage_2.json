@@ -1,0 +1,10 @@
+{
+  "game": "AURION_GHOST_QUEST",
+  "version": 1,
+  "stage": 2,
+  "file_name": "trader.py",
+  "file_hash": "1a0878fa",
+  "checks_passed": 8,
+  "checks_total": 8,
+  "passed": true
+}
